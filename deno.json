@@ -1,0 +1,12 @@
+{
+	"fmt": {
+		"exclude": [
+			"node_modules",
+			".github/workflows"
+		],
+		"indentWidth": 4,
+		"useTabs": true,
+		"lineWidth": 120,
+		"proseWrap": "preserve"
+	}
+}
