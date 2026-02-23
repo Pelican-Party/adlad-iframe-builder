@@ -1,5 +1,6 @@
 {
 	"name": "@adlad/iframe-builder",
+	"version": "0.0.1",
 	"bin": "./cli.js",
 	"dependencies": {
 		"@inquirer/prompts": "^8.2.1",
@@ -8,5 +9,19 @@
 		"jszip": "^3.10.1",
 		"renda": "^0.3.0"
 	},
-	"type": "module"
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Pelican-Party/adlad-iframe-builder.git"
+	},
+	"keywords": [
+		"ads",
+		"adlad"
+	],
+	"author": "Pelican Party Studios",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Pelican-Party/adlad-iframe-builder/issues"
+	},
+	"homepage": "https://github.com/Pelican-Party/adlad-iframe-builder#readme"
 }
