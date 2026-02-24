@@ -71,19 +71,12 @@ try {
 	}
 }
 
+/** @type {string} */
 let pluginSpecifier;
-if (pluginString.startsWith("@")) {
+if (pluginString.startsWith("@") || pluginString.startsWith("http:") || pluginString.startsWith("https:")) {
 	pluginSpecifier = pluginString;
 } else {
 	pluginSpecifier = `@adlad/plugin-${pluginString}`;
-}
-
-let pluginSpecifierWithoutVersion;
-const lastAtIndex = pluginSpecifier.lastIndexOf("@");
-if (lastAtIndex > 0) {
-	pluginSpecifierWithoutVersion = pluginSpecifier.slice(0, lastAtIndex);
-} else {
-	pluginSpecifierWithoutVersion = pluginSpecifier;
 }
 
 const prefix = join(os.tmpdir(), "adlad-iframe-build-");
@@ -108,9 +101,24 @@ try {
  */
 async function buildIframe(tempDir) {
 	console.log("Fetching dependencies...");
-	await fs.writeFile(join(tempDir, "package.json"), "{}");
-	await execa("npm", ["install", `@adlad/adlad@${adladVersionString}`], { cwd: tempDir });
+	const packageJsonPath = join(tempDir, "package.json");
+	await fs.writeFile(packageJsonPath, "{}");
+
 	await execa("npm", ["install", pluginSpecifier], { cwd: tempDir });
+
+	// We need to figure out the name of the plugin that was just installed.
+	// We do this by locking at the package.json contents, there should only be a single dependency at this point.
+	// Using this method allows users to provide a tarball or github url as plugin.
+	const packageJsonContents = await fs.readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageJsonContents);
+
+	const dependencies = Object.entries(packageJson.dependencies);
+	if (dependencies.length != 1) {
+		throw new Error("Expected exactly one package to be installed");
+	}
+	const resolvedPluginSpecifier = dependencies[0][0];
+
+	await execa("npm", ["install", `@adlad/adlad@${adladVersionString}`], { cwd: tempDir });
 
 	const rendaPath = require.resolve("renda/package.json");
 	const nodePath = resolve(rendaPath, "../..");
@@ -120,7 +128,7 @@ async function buildIframe(tempDir) {
 	let entryPoint = await fs.readFile(srcEntryPointPath, "utf-8");
 	entryPoint = entryPoint.replaceAll(
 		`import plugin from "@adlad/plugin-dummy";`,
-		`import plugin from "${pluginSpecifierWithoutVersion}";`,
+		`import plugin from "${resolvedPluginSpecifier}";`,
 	);
 	entryPoint = entryPoint.replaceAll(`iframe.src = "https://example.com";`, `iframe.src = "${url.href}";`);
 	await fs.writeFile(modifiedEntryPointPath, entryPoint);
