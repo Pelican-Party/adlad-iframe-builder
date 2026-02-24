@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"checkJs": true,
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"useDefineForClassFields": true,
+		"strict": true
+	},
+	"files": [
+		"cli.js",
+		"entry.js"
+	]
+}

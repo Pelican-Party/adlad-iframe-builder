@@ -11,6 +11,9 @@
 		"jszip": "^3.10.1",
 		"renda": "^0.3.0"
 	},
+	"devDependencies": {
+		"@types/node": "^25.3.0"
+	},
 	"type": "module",
 	"repository": {
 		"type": "git",
