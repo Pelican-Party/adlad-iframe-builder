@@ -25,11 +25,11 @@ const { values } = parseArgs({
 			type: "string",
 			short: "u",
 		},
-		version: {
+		"adlad-version": {
 			type: "string",
 			short: "v",
 		},
-		queryStringKey: {
+		"query-string-key": {
 			type: "string",
 			short: "q",
 		},
@@ -38,8 +38,8 @@ const { values } = parseArgs({
 
 let pluginString = values.plugin || "";
 let urlString = values.url || "";
-let adladVersionString = values.version || "";
-let queryStringKey = values.queryStringKey || "";
+let adladVersionString = values["adlad-version"] || "";
+let queryStringKey = values["query-string-key"] || "";
 try {
 	while (!pluginString) {
 		pluginString = await input({
