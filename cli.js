@@ -4,13 +4,15 @@ import { input } from "@inquirer/prompts";
 import fs from "node:fs/promises";
 import os from "node:os";
 import process from "node:process";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { execa } from "execa";
 import { parseArgs } from "node:util";
 import esbuild from "esbuild";
 import { fileURLToPath } from "node:url";
 import JSZip from "jszip";
+import { createRequire } from "node:module";
 
+const require = createRequire(import.meta.url);
 const zipOutputPath = join(process.cwd(), "game.zip");
 
 const { values } = parseArgs({
@@ -110,7 +112,8 @@ async function buildIframe(tempDir) {
 	await execa("npm", ["install", `@adlad/adlad@${adladVersionString}`], { cwd: tempDir });
 	await execa("npm", ["install", pluginSpecifier], { cwd: tempDir });
 
-	const nodePath = join(builderDir, "node_modules");
+	const rendaPath = require.resolve("renda/package.json");
+	const nodePath = resolve(rendaPath, "../..");
 	const tempNodePath = join(tempDir, "node_modules");
 	const srcEntryPointPath = join(builderDir, "entry.js");
 	const modifiedEntryPointPath = join(tempDir, "entry.js");
