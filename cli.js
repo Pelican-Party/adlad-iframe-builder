@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { input } from "@inquirer/prompts";
 import fs from "node:fs/promises";
 import os from "node:os";
