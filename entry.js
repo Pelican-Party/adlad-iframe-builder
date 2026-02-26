@@ -2,6 +2,7 @@ import { AdLad } from "@adlad/adlad";
 import { TypedMessenger } from "renda";
 import plugin from "@adlad/plugin-dummy";
 
+/** @type {AdLad?} */
 let adLad = null;
 
 const messenger = new TypedMessenger();
@@ -25,6 +26,9 @@ messenger.setResponseHandlers({
 	},
 	showFullScreenAd: async () => {
 		return await adLad.showFullScreenAd();
+	},
+	gameplayStart: async () => {
+		return await adLad.gameplayStart();
 	},
 });
 
