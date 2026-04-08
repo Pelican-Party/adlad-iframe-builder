@@ -73,7 +73,10 @@ try {
 
 /** @type {string} */
 let pluginSpecifier;
-if (pluginString.startsWith("@") || pluginString.startsWith("http:") || pluginString.startsWith("https:")) {
+if (
+	pluginString.startsWith("@") || pluginString.startsWith("http:") || pluginString.startsWith("https:") ||
+	pluginString.startsWith("/")
+) {
 	pluginSpecifier = pluginString;
 } else {
 	pluginSpecifier = `@adlad/plugin-${pluginString}`;
@@ -118,6 +121,35 @@ async function buildIframe(tempDir) {
 	}
 	const resolvedPluginSpecifier = dependencies[0][0];
 
+	const builderRequire = createRequire(packageJsonPath);
+	let pluginEntryPath = null;
+	try {
+		pluginEntryPath = builderRequire.resolve(`${resolvedPluginSpecifier}/iframeBridge`);
+	} catch {
+		// Ignore, iframeBridgeEntry will stay null
+	}
+
+	/** @type {string?} */
+	let customPluginOptions = null;
+
+	if (pluginEntryPath) {
+		const plugin = await import(pluginEntryPath);
+		await plugin.default({
+			/**
+			 * @param {string} message
+			 */
+			prompt: (message) => {
+				return input({ message });
+			},
+			/**
+			 * @param {string} optionsString
+			 */
+			setPluginOptions(optionsString) {
+				customPluginOptions = optionsString;
+			},
+		});
+	}
+
 	await execa("npm", ["install", `@adlad/adlad@${adladVersionString}`], { cwd: tempDir });
 
 	const rendaPath = require.resolve("renda/package.json");
@@ -130,6 +162,12 @@ async function buildIframe(tempDir) {
 		`import plugin from "@adlad/plugin-dummy";`,
 		`import plugin from "${resolvedPluginSpecifier}";`,
 	);
+	if (customPluginOptions != null) {
+		entryPoint = entryPoint.replace(
+			`const pluginOptions = undefined;`,
+			`const pluginOptions = ${customPluginOptions};`,
+		);
+	}
 	entryPoint = entryPoint.replaceAll(`iframe.src = "https://example.com";`, `iframe.src = "${url.href}";`);
 	await fs.writeFile(modifiedEntryPointPath, entryPoint);
 

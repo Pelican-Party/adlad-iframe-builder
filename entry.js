@@ -11,10 +11,13 @@ globalThis.addEventListener("message", (event) => {
 		messenger.handleReceivedMessage(event.data.adLadIframeBridgeMessage);
 	}
 });
+
+const pluginOptions = undefined;
+
 messenger.setResponseHandlers({
 	async init() {
 		adLad = new AdLad({
-			plugins: [plugin()],
+			plugins: [plugin(pluginOptions)],
 		});
 		adLad.onNeedsMuteChange((needsMute) => {
 			messenger.send.setNeedsMute(needsMute);
@@ -29,6 +32,16 @@ messenger.setResponseHandlers({
 	},
 	gameplayStart: async () => {
 		return await adLad.gameplayStart();
+	},
+	getActivePlugin: () => {
+		return adLad.activePlugin;
+	},
+	/**
+	 * @param {string} command
+	 * @param {unknown[]} args
+	 */
+	customRequest: (command, args) => {
+		return adLad.customRequests[command](...args);
 	},
 });
 
