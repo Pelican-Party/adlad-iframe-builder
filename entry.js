@@ -48,7 +48,7 @@ messenger.setResponseHandlers({
 	 * @param {unknown} value
 	 */
 	setStorageItem: async (key, value) => {
-		console.log("setStorageItem response handler called", {key, value})
+		console.log("setStorageItem response handler called", { key, value });
 		return await adLad.setStorageItem(key, value);
 	},
 	/**
@@ -56,9 +56,9 @@ messenger.setResponseHandlers({
 	 * @returns {Promise<unknown>}
 	 */
 	getStorageItem: async (key) => {
-		console.log("getStorageItem response handler called", {key})
+		console.log("getStorageItem response handler called", { key });
 		return await adLad.getStorageItem(key);
-	}
+	},
 });
 
 window.addEventListener("load", () => {
