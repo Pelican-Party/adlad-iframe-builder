@@ -34,12 +34,13 @@ const { values } = parseArgs({
 			short: "q",
 		},
 	},
+	strict: false,
 });
 
-let pluginString = values.plugin || "";
-let urlString = values.url || "";
-let adladVersionString = values["adlad-version"] || "";
-let queryStringKey = values["query-string-key"] || "";
+let pluginString = String(values.plugin || "");
+let urlString = String(values.url || "");
+let adladVersionString = String(values["adlad-version"] || "");
+let queryStringKey = String(values["query-string-key"] || "");
 try {
 	while (!pluginString) {
 		pluginString = await input({
