@@ -13,7 +13,6 @@ import JSZip from "jszip";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const zipOutputPath = join(process.cwd(), "game.zip");
 
 const { values } = parseArgs({
 	options: {
@@ -33,6 +32,10 @@ const { values } = parseArgs({
 			type: "string",
 			short: "q",
 		},
+		out: {
+			type: "string",
+			short: "o",
+		},
 	},
 	strict: false,
 });
@@ -41,6 +44,7 @@ let pluginString = String(values.plugin || "");
 let urlString = String(values.url || "");
 let adladVersionString = String(values["adlad-version"] || "");
 let queryStringKey = String(values["query-string-key"] || "");
+let outPath = String(values.out || "game.zip");
 try {
 	while (!pluginString) {
 		pluginString = await input({
@@ -194,6 +198,8 @@ async function buildIframe(tempDir) {
 	const zip = new JSZip();
 	zip.file("index.html", indexHtml);
 	const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });
+
+	const zipOutputPath = resolve(process.cwd(), outPath);
 	await fs.writeFile(zipOutputPath, zipBuffer);
 	console.log(`Done! Created ${zipOutputPath}`);
 }
